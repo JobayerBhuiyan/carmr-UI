@@ -1,0 +1,61 @@
+"use client"
+
+import { Shield, Lock, EyeOff } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useI18n } from "@/lib/i18n/context"
+
+interface TrustBadgeProps {
+  variant?: "default" | "compact"
+  className?: string
+}
+
+export function TrustBadge({ variant = "default", className }: TrustBadgeProps) {
+  const { t } = useI18n()
+
+  const badges = [
+    { icon: Shield, label: t.bankLevelSecurity },
+    { icon: Lock, label: t.encrypted },
+    { icon: EyeOff, label: t.privacyProtected },
+  ]
+
+  if (variant === "compact") {
+    return (
+      <div className={cn("flex items-center gap-4", className)}>
+        {badges.map((badge) => (
+          <div key={badge.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <badge.icon className="h-3.5 w-3.5" />
+            <span>{badge.label}</span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className={cn("flex flex-wrap items-center justify-center gap-3 sm:gap-4", className)}>
+      {badges.map((badge) => (
+        <div
+          key={badge.label}
+          className="flex items-center gap-2 rounded-2xl border border-border/50 bg-muted/30 px-4 py-2"
+        >
+          <badge.icon className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-foreground/80">{badge.label}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function TrustNote() {
+  const { t } = useI18n()
+
+  return <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">{t.trustNote}</p>
+}
+
+export function SourcesLine() {
+  return (
+    <p className="text-xs text-muted-foreground/70 font-medium tracking-wide">
+      Sources: NMVTIS • NHTSA • Auctions • Insurance
+    </p>
+  )
+}
