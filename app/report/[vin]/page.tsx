@@ -27,10 +27,10 @@ export default async function ReportPage({ params }: { params: Promise<{ vin: st
 
   return (
     <DemoStateProvider>
-      <div className="flex min-h-screen flex-col overflow-x-hidden">
+      <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1 bg-muted/30 pb-20 lg:pb-0">
-          <div className="mx-auto max-w-7xl overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 overflow-hidden">
             <ReportWatermark report={report} />
 
             <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_340px]">

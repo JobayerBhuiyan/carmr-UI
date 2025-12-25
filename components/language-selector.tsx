@@ -9,6 +9,8 @@ export function LanguageSelector() {
   const { language, setLanguage } = useI18n()
   const currentLang = languages.find((l) => l.code === language) || languages[0]
 
+  const availableLanguages = languages.filter((l) => l.code !== language)
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -18,14 +20,14 @@ export function LanguageSelector() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[160px] w-auto">
-        {languages.map((lang) => (
+        {availableLanguages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => setLanguage(lang.code)}
             className="flex items-center gap-3 cursor-pointer"
           >
             <span className="text-base">{lang.flag}</span>
-            <span className={language === lang.code ? "font-medium" : ""}>{lang.name}</span>
+            <span>{lang.name}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
