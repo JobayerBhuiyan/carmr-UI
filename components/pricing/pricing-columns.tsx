@@ -9,6 +9,7 @@ import { Check } from "lucide-react"
 import { pricingPlans, proPass, monthlyPlan } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { CTA_SECONDARY } from "@/components/cta"
 
 interface PricingColumnsProps {
   className?: string
@@ -67,9 +68,9 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         </CardContent>
 
         <CardFooter>
-          <Button className="w-full bg-transparent" variant="outline" onClick={() => handleSelect(currentPackage.name)}>
+          <button type="button" className={CTA_SECONDARY} onClick={() => handleSelect(currentPackage.name)}>
             Buy {currentPackage.reports} Report{Number(currentPackage.reports) === 1 ? "" : "s"}
-          </Button>
+          </button>
         </CardFooter>
       </Card>
 
@@ -105,7 +106,10 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         </CardContent>
 
         <CardFooter>
-          <Button className="w-full" onClick={() => handleSelect(proPass.name)}>
+          <Button
+            className="w-full bg-primary hover:brightness-110 text-white rounded-2xl px-4 py-3 transition-colors"
+            onClick={() => handleSelect(proPass.name)}
+          >
             Get Pro Pass
           </Button>
         </CardFooter>
@@ -143,9 +147,9 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         </CardContent>
 
         <CardFooter>
-          <Button className="w-full bg-transparent" variant="outline" onClick={() => handleSelect(monthlyPlan.name)}>
+          <button type="button" className={CTA_SECONDARY} onClick={() => handleSelect(monthlyPlan.name)}>
             Subscribe Monthly
-          </Button>
+          </button>
         </CardFooter>
       </Card>
     </div>

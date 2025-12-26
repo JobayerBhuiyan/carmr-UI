@@ -149,13 +149,13 @@ export function VinInput({ className, onModeChange }: VinInputProps) {
 
             <div
               id="vin-helper"
-              className="min-h-[20px] flex items-center justify-between text-xs text-muted-foreground px-1"
+              className="mt-1 flex items-center justify-between h-5 sm:h-auto text-xs sm:text-sm text-muted-foreground px-1"
             >
-              <span>17 characters (no I, O, Q)</span>
+              <p className="truncate">17 characters (no I, O, Q)</p>
               <button
                 type="button"
                 onClick={() => setVinHelpOpen(true)}
-                className="flex items-center gap-1 text-primary hover:underline underline-offset-2 transition-colors"
+                className="ml-2 whitespace-nowrap text-primary hover:underline underline-offset-2 transition-colors flex items-center gap-1"
               >
                 <HelpCircle className="h-3 w-3" />
                 Where to find the VIN?
@@ -213,12 +213,15 @@ export function VinInput({ className, onModeChange }: VinInputProps) {
               />
             </div>
 
-            <div className="min-h-[20px] flex items-center justify-between text-xs text-muted-foreground px-1">
-              <span>2-8 characters + 2-letter state code</span>
+            <div className="mt-1 flex items-center justify-between h-5 sm:h-auto text-xs sm:text-sm text-muted-foreground px-1">
+              <p className="truncate">
+                <span className="sm:hidden">2–8 chars + state</span>
+                <span className="hidden sm:inline">2–8 characters + 2-letter state code</span>
+              </p>
               <button
                 type="button"
                 onClick={() => setVinHelpOpen(true)}
-                className="flex items-center gap-1 text-primary hover:underline underline-offset-2 transition-colors"
+                className="ml-2 whitespace-nowrap text-primary hover:underline underline-offset-2 transition-colors flex items-center gap-1"
               >
                 <HelpCircle className="h-3 w-3" />
                 Where to find the plate?
