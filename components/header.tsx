@@ -4,15 +4,24 @@ import Link from "next/link"
 import Image from "next/image"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
-import { Moon, Sun, Menu, X } from "lucide-react"
+import { Moon, Sun, Menu, X, LogOut, User } from "lucide-react"
 import { useState } from "react"
 import { LanguageSelector } from "@/components/language-selector"
 import { useI18n } from "@/lib/i18n/context"
+import { useAuth } from "@/lib/auth/context"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Header() {
   const { theme, setTheme } = useTheme()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { t } = useI18n()
+  const { user, signOut, isLoading } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -63,12 +72,37 @@ export function Header() {
             <span className="sr-only">{t.toggleTheme}</span>
           </Button>
 
-          <Button variant="ghost" size="sm" className="hidden md:inline-flex">
-            {t.signIn}
-          </Button>
-          <Button size="sm" className="hidden md:inline-flex">
-            {t.getStarted}
-          </Button>
+          {!isLoading && (
+            <>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="hidden gap-2 md:inline-flex">
+                      <User className="h-4 w-4" />
+                      <span className="max-w-[100px] truncate">{user.name}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <div className="px-2 py-1.5 text-sm font-medium">{user.email}</div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      {t.signOut || "Sign out"}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+                    <Link href="/sign-in">{t.signIn}</Link>
+                  </Button>
+                  <Button size="sm" className="hidden md:inline-flex" asChild>
+                    <Link href="/sign-up">{t.getStarted}</Link>
+                  </Button>
+                </>
+              )}
+            </>
+          )}
 
           {/* Mobile menu button */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -103,12 +137,33 @@ export function Header() {
               {t.sampleReport}
             </Link>
             <div className="flex gap-2 pt-2">
-              <Button variant="ghost" size="sm" className="flex-1">
-                {t.signIn}
-              </Button>
-              <Button size="sm" className="flex-1">
-                {t.getStarted}
-              </Button>
+              {user ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => {
+                    signOut()
+                    setMobileMenuOpen(false)
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  {t.signOut || "Sign out"}
+                </Button>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" className="flex-1" asChild>
+                    <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                      {t.signIn}
+                    </Link>
+                  </Button>
+                  <Button size="sm" className="flex-1" asChild>
+                    <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                      {t.getStarted}
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>

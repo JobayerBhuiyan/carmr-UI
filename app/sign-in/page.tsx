@@ -1,0 +1,112 @@
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useAuth } from "@/lib/auth/context"
+import { useI18n } from "@/lib/i18n/context"
+import { Loader2 } from "lucide-react"
+
+export default function SignInPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const { signIn } = useAuth()
+  const router = useRouter()
+  const { t } = useI18n()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setIsLoading(true)
+
+    const result = await signIn(email, password)
+
+    if (result.success) {
+      router.push("/")
+    } else {
+      setError(result.error || "Sign in failed")
+    }
+
+    setIsLoading(false)
+  }
+
+  return (
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <Link href="/" className="inline-block">
+            <Image
+              src="/images/carMR-logo-cropped.png"
+              alt="CarMR"
+              width={180}
+              height={28}
+              className="mx-auto h-10 w-auto"
+            />
+          </Link>
+          <h1 className="mt-6 text-2xl font-bold tracking-tight">{t.signIn}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t.signInSubtitle || "Enter your credentials to access your account"}
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          {error && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">{t.email || "Email"}</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">{t.password || "Password"}</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t.signingIn || "Signing in..."}
+              </>
+            ) : (
+              t.signIn
+            )}
+          </Button>
+
+          <p className="text-center text-sm text-muted-foreground">
+            {t.noAccount || "Don't have an account?"}{" "}
+            <Link href="/sign-up" className="font-medium text-primary hover:underline">
+              {t.getStarted}
+            </Link>
+          </p>
+        </form>
+      </div>
+    </div>
+  )
+}

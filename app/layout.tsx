@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { I18nProvider } from "@/lib/i18n/context"
 import { ScrollLockBlocker } from "@/components/scroll-lock-blocker"
+import { AuthProvider } from "@/lib/auth/context"
 
 const inter = Inter({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -39,8 +40,10 @@ export default function RootLayout({
         <ScrollLockBlocker />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <I18nProvider>
-            {children}
-            <Toaster />
+            <AuthProvider>
+              {children}
+              <Toaster />
+            </AuthProvider>
           </I18nProvider>
         </ThemeProvider>
         <Analytics />
