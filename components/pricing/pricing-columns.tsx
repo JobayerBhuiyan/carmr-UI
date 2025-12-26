@@ -67,7 +67,7 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         </CardContent>
 
         <CardFooter>
-          <Button className="w-full bg-transparent" variant="outline" onClick={() => handleSelect(currentPackage.name)}>
+          <Button className="w-full" onClick={() => handleSelect(currentPackage.name)}>
             Buy {currentPackage.reports} Report{Number(currentPackage.reports) === 1 ? "" : "s"}
           </Button>
         </CardFooter>
@@ -143,7 +143,7 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         </CardContent>
 
         <CardFooter>
-          <Button className="w-full bg-transparent" variant="outline" onClick={() => handleSelect(monthlyPlan.name)}>
+          <Button className="w-full" onClick={() => handleSelect(monthlyPlan.name)}>
             Subscribe Monthly
           </Button>
         </CardFooter>
