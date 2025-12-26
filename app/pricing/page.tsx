@@ -14,7 +14,7 @@ export default function PricingPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1">
-        <section className="border-b border-border bg-gradient-to-b from-muted/50 to-background py-16 sm:py-24">
+        <section className="border-b border-border bg-gradient-to-b from-muted/50 to-background py-10 sm:py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Plans and Pricing</h1>
@@ -24,9 +24,9 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <PricingColumns className="mt-12" />
+            <PricingColumns className="mt-8" />
 
-            <div className="mt-8 mx-auto max-w-3xl space-y-3 text-sm text-muted-foreground">
+            <div className="mt-4 mx-auto max-w-3xl space-y-3 text-sm text-muted-foreground">
               <p>
                 <span className="font-semibold text-foreground">*3 Days Trial for Unlimited Vehicle History.</span> In
                 the trial membership, you can check up to five reports per day. Cancel anytime online through your
@@ -41,13 +41,13 @@ export default function PricingPage() {
               </p>
             </div>
 
-            <div className="mt-12 flex justify-center">
+            <div className="mt-6 flex justify-center">
               <TrustBadge />
             </div>
           </div>
         </section>
 
-        <section className="bg-background py-16 sm:py-24">
+        <section className="bg-background py-10 sm:py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">Compare Plans</h2>
             <PricingComparison className="mt-8" />
