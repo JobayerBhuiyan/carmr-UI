@@ -50,6 +50,7 @@ export type TranslationKeys = {
   extensiveReport: string
   secureCheckout: string
   refundEligible: string
+  multiSourceData: string
 
   // How It Works
   howItWorks: string
@@ -169,6 +170,7 @@ export const translations: Record<Language, TranslationKeys> = {
     extensiveReport: "Extensive Report",
     secureCheckout: "Secure Checkout",
     refundEligible: "Refund Eligible",
+    multiSourceData: "Multi-source data",
 
     // How It Works - Updated step descriptions
     howItWorks: "How It Works",
@@ -288,6 +290,7 @@ export const translations: Record<Language, TranslationKeys> = {
     extensiveReport: "Informe Extenso",
     secureCheckout: "Pago Seguro",
     refundEligible: "Elegible para Reembolso",
+    multiSourceData: "Datos de múltiples fuentes",
 
     // How It Works - Updated step descriptions
     howItWorks: "Cómo Funciona",
@@ -409,6 +412,7 @@ export const translations: Record<Language, TranslationKeys> = {
     extensiveReport: "Rapport Complet",
     secureCheckout: "Paiement Sécurisé",
     refundEligible: "Remboursement Possible",
+    multiSourceData: "Données multi-sources",
 
     // How It Works - Updated step descriptions
     howItWorks: "Comment Ça Marche",
@@ -529,6 +533,7 @@ export const translations: Record<Language, TranslationKeys> = {
     extensiveReport: "Полный Отчёт",
     secureCheckout: "Безопасная Оплата",
     refundEligible: "Возврат Возможен",
+    multiSourceData: "Данные из множества источников",
 
     // How It Works - Updated step descriptions
     howItWorks: "Как Это Работает",
@@ -647,6 +652,7 @@ export const translations: Record<Language, TranslationKeys> = {
     extensiveReport: "تقرير شامل",
     secureCheckout: "دفع آمن",
     refundEligible: "مؤهل للاسترداد",
+    multiSourceData: "بيانات متعددة المصادر",
 
     // How It Works - Updated step descriptions
     howItWorks: "كيف يعمل",

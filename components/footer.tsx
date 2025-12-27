@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Shield, Lock, Eye } from "lucide-react"
+import { Database, Lock, Eye } from "lucide-react"
 import { useI18n } from "@/lib/i18n/context"
 
 export function Footer() {
@@ -16,8 +16,8 @@ export function Footer() {
             <p className="mt-2 text-sm text-muted-foreground">{t.footerTagline}</p>
             <div className="mt-4 flex items-center gap-4">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Shield className="h-3.5 w-3.5" />
-                <span>{t.bankLevelSecurity}</span>
+                <Database className="h-3.5 w-3.5" />
+                <span>{t.multiSourceData}</span>
               </div>
             </div>
           </div>
