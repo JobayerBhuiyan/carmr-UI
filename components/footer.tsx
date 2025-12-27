@@ -71,11 +71,6 @@ export function Footer() {
                   Blog
                 </Link>
               </li>
-              <li>
-                <Link href="/info#status" className="text-sm text-muted-foreground hover:text-foreground">
-                  Status
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -83,28 +78,13 @@ export function Footer() {
             <h3 className="text-sm font-semibold">{t.legal}</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link href="/info#security" className="text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/info#privacy-policy" className="text-sm text-muted-foreground hover:text-foreground">
                   {t.privacyPolicy}
                 </Link>
               </li>
               <li>
                 <Link href="/info#acceptable-use" className="text-sm text-muted-foreground hover:text-foreground">
                   {t.termsOfService}
-                </Link>
-              </li>
-              <li>
-                <Link href="/info#dpa" className="text-sm text-muted-foreground hover:text-foreground">
-                  {t.dataProtection}
-                </Link>
-              </li>
-              <li>
-                <Link href="/info#cookies" className="text-sm text-muted-foreground hover:text-foreground">
-                  Cookies
-                </Link>
-              </li>
-              <li>
-                <Link href="/info#subprocessors" className="text-sm text-muted-foreground hover:text-foreground">
-                  Subprocessors
                 </Link>
               </li>
               <li>

@@ -10,6 +10,7 @@ import {
   Server,
   FileCheck,
   Activity,
+  Lock,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -228,6 +229,31 @@ export default function InfoPage() {
           <p className="text-muted-foreground">
             Our infrastructure is hosted on secure cloud providers with SOC 2 Type II certification. We conduct regular
             security audits and penetration testing to identify and address potential vulnerabilities.
+          </p>
+        </section>
+
+        {/* Privacy Policy Section */}
+        <section id="privacy-policy" className="mb-16 scroll-mt-24">
+          <div className="mb-6 flex items-center gap-3">
+            <Lock className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-semibold">Privacy Policy</h2>
+          </div>
+          <p className="mb-4 text-muted-foreground">
+            At CarMR, we are committed to protecting your privacy. This policy explains what information we collect, how
+            we use it, and your rights regarding your personal data.
+          </p>
+          <p className="mb-4 text-muted-foreground">
+            We collect only the information necessary to provide our vehicle history report services: your email
+            address, payment details (processed securely by our payment provider), and the VINs or license plates you
+            search for.
+          </p>
+          <p className="mb-4 text-muted-foreground">
+            We do not sell, rent, or share your personal information with third parties for marketing purposes. Your
+            search history is kept confidential and is only accessible to you through your account.
+          </p>
+          <p className="text-muted-foreground">
+            You have the right to access, correct, or delete your personal data at any time. For any privacy-related
+            inquiries, please contact <span className="text-primary">privacy@carmr.com</span>.
           </p>
         </section>
 
