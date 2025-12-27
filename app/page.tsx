@@ -5,6 +5,8 @@ import { HowItWorksSection } from "@/components/landing/how-it-works-section"
 import { PricingPreviewSection } from "@/components/landing/pricing-preview-section"
 import { FeaturesSection } from "@/components/landing/features-section"
 
+export const dynamic = "force-dynamic"
+
 console.log("[v0] HomePage: Starting to render")
 
 export default function HomePage() {
