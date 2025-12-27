@@ -1,6 +1,6 @@
 "use client"
 
-import { Shield, Lock, EyeOff } from "lucide-react"
+import { FileText, Lock, RefreshCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useI18n } from "@/lib/i18n/context"
 
@@ -13,9 +13,9 @@ export function TrustBadge({ variant = "default", className }: TrustBadgeProps) 
   const { t } = useI18n()
 
   const badges = [
-    { icon: Shield, label: t.bankLevelSecurity },
-    { icon: Lock, label: t.encrypted },
-    { icon: EyeOff, label: t.privacyProtected },
+    { icon: FileText, label: t.extensiveReport },
+    { icon: Lock, label: t.secureCheckout },
+    { icon: RefreshCcw, label: t.refundEligible },
   ]
 
   if (variant === "compact") {

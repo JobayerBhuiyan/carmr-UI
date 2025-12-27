@@ -53,7 +53,7 @@ export function PricingColumns({ className }: PricingColumnsProps) {
             </Select>
 
             <div className="rounded-xl border border-border bg-muted/50 p-4">
-              <div className="flex items-baseline justify-between">
+              <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold">${currentPackage.price}</span>
                 <span className="text-sm text-muted-foreground">
                   ${currentPackage.pricePerReport?.toFixed(2)}/report
@@ -163,25 +163,13 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         <CardContent className="flex-1">
           <div className="space-y-3">
             <div className="rounded-xl border border-border bg-muted/50 p-4">
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-bold">${monthlyPlan.price}</span>
-                <span className="text-sm text-muted-foreground">/month</span>
+              <div className="flex items-baseline gap-2 whitespace-nowrap">
+                <span className="shrink-0 text-4xl font-bold">${monthlyPlan.price}</span>
+                <span className="shrink-0 text-sm text-muted-foreground">/month</span>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">Cancel anytime</p>
             </div>
           </div>
-
-          <ul className="mt-4 space-y-3">
-            {monthlyPlan.features.map((feature, idx) => (
-              <li
-                key={feature}
-                className={cn("flex items-start gap-2 text-sm", idx === monthlyPlan.features.length - 1 && "mb-0")}
-              >
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
         </CardContent>
 
         <div className="mt-auto p-6 pt-4">

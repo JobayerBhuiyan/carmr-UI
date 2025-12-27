@@ -47,6 +47,9 @@ export type TranslationKeys = {
   bankLevelSecurity: string
   privacyProtected: string
   trustNote: string
+  extensiveReport: string
+  secureCheckout: string
+  refundEligible: string
 
   // How It Works
   howItWorks: string
@@ -163,6 +166,9 @@ export const translations: Record<Language, TranslationKeys> = {
     bankLevelSecurity: "Bank-level Security",
     privacyProtected: "No Data Resale",
     trustNote: "Reports include data from 100+ sources including NMVTIS, insurance companies, and auto auctions.",
+    extensiveReport: "Extensive Report",
+    secureCheckout: "Secure Checkout",
+    refundEligible: "Refund Eligible",
 
     // How It Works - Updated step descriptions
     howItWorks: "How It Works",
@@ -279,6 +285,9 @@ export const translations: Record<Language, TranslationKeys> = {
     privacyProtected: "Sin Reventa de Datos",
     trustNote:
       "Los informes incluyen datos de más de 100 fuentes, incluyendo NMVTIS, compañías de seguros y subastas de autos.",
+    extensiveReport: "Informe Extenso",
+    secureCheckout: "Pago Seguro",
+    refundEligible: "Elegible para Reembolso",
 
     // How It Works - Updated step descriptions
     howItWorks: "Cómo Funciona",
@@ -397,6 +406,9 @@ export const translations: Record<Language, TranslationKeys> = {
     privacyProtected: "Pas de Revente de Données",
     trustNote:
       "Les rapports incluent des données de plus de 100 sources, y compris NMVTIS, compagnies d'assurance et автоаукционы.",
+    extensiveReport: "Rapport Complet",
+    secureCheckout: "Paiement Sécurisé",
+    refundEligible: "Remboursement Possible",
 
     // How It Works - Updated step descriptions
     howItWorks: "Comment Ça Marche",
@@ -514,6 +526,9 @@ export const translations: Record<Language, TranslationKeys> = {
     bankLevelSecurity: "Банковская Безопасность",
     privacyProtected: "Без Перепродажи Данных",
     trustNote: "Отчёты включают данные из более чем 100 источников, включая NMVTIS, страховые компании и автоаукционы.",
+    extensiveReport: "Полный Отчёт",
+    secureCheckout: "Безопасная Оплата",
+    refundEligible: "Возврат Возможен",
 
     // How It Works - Updated step descriptions
     howItWorks: "Как Это Работает",
@@ -629,6 +644,9 @@ export const translations: Record<Language, TranslationKeys> = {
     bankLevelSecurity: "أمان بمستوى البنوك",
     privacyProtected: "لا إعادة بيع للبيانات",
     trustNote: "تتضمن التقارير بيانات من أكثر من 100 مصدر بما في ذلك NMVTIS وشركات التأمين ومزادات السيارات.",
+    extensiveReport: "تقرير شامل",
+    secureCheckout: "دفع آمن",
+    refundEligible: "مؤهل للاسترداد",
 
     // How It Works - Updated step descriptions
     howItWorks: "كيف يعمل",
