@@ -11,6 +11,7 @@ import {
   FileCheck,
   Activity,
 } from "lucide-react"
+import Link from "next/link"
 
 export const metadata = {
   title: "Information & Legal | CarMR",
@@ -21,6 +22,14 @@ export default function InfoPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+        <nav className="mb-8 text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-foreground">
+            Home
+          </Link>
+          <span className="mx-2">›</span>
+          <span>Information & Legal</span>
+        </nav>
+
         <h1 className="mb-4 text-center text-4xl font-bold tracking-tight">Information & Legal</h1>
         <p className="mb-16 text-center text-muted-foreground">
           Everything you need to know about CarMR, our policies, and how we can help you.

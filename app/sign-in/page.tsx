@@ -39,78 +39,90 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <Link href="/" className="inline-block">
-            <Image
-              src="/images/carMR-logo-cropped.png"
-              alt="CarMR"
-              width={180}
-              height={28}
-              className="mx-auto h-10 w-auto"
-            />
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-md px-4 pt-8">
+        <nav className="mb-4 text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-foreground">
+            Home
           </Link>
-          <h1 className="mt-6 text-2xl font-bold tracking-tight">{t.signIn}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t.signInSubtitle || "Enter your credentials to access your account"}
-          </p>
-        </div>
+          <span className="mx-2">›</span>
+          <span>Sign In</span>
+        </nav>
+      </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          {error && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="emailOrPhone">Email or phone number</Label>
-              <Input
-                id="emailOrPhone"
-                type="text"
-                placeholder="you@example.com or +1 (555) 123-4567"
-                value={emailOrPhone}
-                onChange={(e) => setEmailOrPhone(e.target.value)}
-                required
-                autoComplete="username"
+      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <Link href="/" className="inline-block">
+              <Image
+                src="/images/carMR-logo-cropped.png"
+                alt="CarMR"
+                width={180}
+                height={28}
+                className="mx-auto h-10 w-auto"
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">{t.password || "Password"}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-              <div className="flex justify-end">
-                <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                  Forgot password?
-                </Link>
-              </div>
-            </div>
+            </Link>
+            <h1 className="mt-6 text-2xl font-bold tracking-tight">{t.signIn}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t.signInSubtitle || "Enter your credentials to access your account"}
+            </p>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t.signingIn || "Signing in..."}
-              </>
-            ) : (
-              t.signIn
-            )}
-          </Button>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            {error && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
-          <p className="text-center text-sm text-muted-foreground">
-            {t.noAccount || "Don't have an account?"}{" "}
-            <Link href="/sign-up" className="font-medium text-primary hover:underline">
-              {t.getStarted}
-            </Link>
-          </p>
-        </form>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="emailOrPhone">Email or phone number</Label>
+                <Input
+                  id="emailOrPhone"
+                  type="text"
+                  placeholder="you@example.com or +1 (555) 123-4567"
+                  value={emailOrPhone}
+                  onChange={(e) => setEmailOrPhone(e.target.value)}
+                  required
+                  autoComplete="username"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">{t.password || "Password"}</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+                <div className="flex justify-end">
+                  <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t.signingIn || "Signing in..."}
+                </>
+              ) : (
+                t.signIn
+              )}
+            </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              {t.noAccount || "Don't have an account?"}{" "}
+              <Link href="/sign-up" className="font-medium text-primary hover:underline">
+                {t.getStarted}
+              </Link>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   )
