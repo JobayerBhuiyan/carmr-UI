@@ -14,7 +14,7 @@ import { useI18n } from "@/lib/i18n/context"
 import { Loader2 } from "lucide-react"
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("")
+  const [emailOrPhone, setEmailOrPhone] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -27,7 +27,7 @@ export default function SignInPage() {
     setError("")
     setIsLoading(true)
 
-    const result = await signIn(email, password)
+    const result = await signIn(emailOrPhone, password)
 
     if (result.success) {
       router.push("/")
@@ -62,15 +62,15 @@ export default function SignInPage() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">{t.email || "Email"}</Label>
+              <Label htmlFor="emailOrPhone">Email or phone number</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="emailOrPhone"
+                type="text"
+                placeholder="you@example.com or +1 (555) 123-4567"
+                value={emailOrPhone}
+                onChange={(e) => setEmailOrPhone(e.target.value)}
                 required
-                autoComplete="email"
+                autoComplete="username"
               />
             </div>
 
@@ -85,6 +85,11 @@ export default function SignInPage() {
                 required
                 autoComplete="current-password"
               />
+              <div className="flex justify-end">
+                <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
           </div>
 
