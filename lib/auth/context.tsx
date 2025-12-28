@@ -1,6 +1,8 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { createBrowserClient } from "@/lib/supabase/client"
+import type { User as SupabaseUser, Session } from "@supabase/supabase-js"
 
 export type User = {
   id: string
@@ -14,49 +16,58 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>
   signOut: () => void
+  getAccessToken: () => Promise<string | null>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+function mapSupabaseUser(supabaseUser: SupabaseUser | null): User | null {
+  if (!supabaseUser) return null
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email || "",
+    name: supabaseUser.user_metadata?.name || supabaseUser.email?.split("@")[0] || "",
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [supabase] = useState(() => createBrowserClient())
 
   useEffect(() => {
-    // Check for existing session on mount
-    const storedUser = localStorage.getItem("carmr_user")
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser))
-      } catch {
-        localStorage.removeItem("carmr_user")
-      }
-    }
-    setIsLoading(false)
-  }, [])
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession)
+      setUser(mapSupabaseUser(currentSession?.user ?? null))
+      setIsLoading(false)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession)
+      setUser(mapSupabaseUser(newSession?.user ?? null))
+      setIsLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase])
 
   const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    // Demo authentication - in production, this would call an API
     if (!email || !password) {
       return { success: false, error: "Email and password are required" }
     }
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
-    // Demo: accept any valid-looking email with password length >= 6
-    if (password.length < 6) {
-      return { success: false, error: "Invalid credentials" }
-    }
-
-    const newUser: User = {
-      id: crypto.randomUUID(),
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      name: email.split("@")[0],
+      password,
+    })
+
+    if (error) {
+      return { success: false, error: error.message }
     }
 
-    setUser(newUser)
-    localStorage.setItem("carmr_user", JSON.stringify(newUser))
+    setUser(mapSupabaseUser(data.user))
+    setSession(data.session)
     return { success: true }
   }
 
@@ -65,7 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     name: string,
   ): Promise<{ success: boolean; error?: string }> => {
-    // Demo registration - in production, this would call an API
     if (!email || !password || !name) {
       return { success: false, error: "All fields are required" }
     }
@@ -74,26 +84,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, error: "Password must be at least 6 characters" }
     }
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
-    const newUser: User = {
-      id: crypto.randomUUID(),
+    const { data, error } = await supabase.auth.signUp({
       email,
-      name,
+      password,
+      options: {
+        data: {
+          name,
+        },
+      },
+    })
+
+    if (error) {
+      return { success: false, error: error.message }
     }
 
-    setUser(newUser)
-    localStorage.setItem("carmr_user", JSON.stringify(newUser))
+    setUser(mapSupabaseUser(data.user))
+    setSession(data.session)
     return { success: true }
   }
 
-  const signOut = () => {
+  const signOut = async () => {
+    await supabase.auth.signOut()
     setUser(null)
-    localStorage.removeItem("carmr_user")
+    setSession(null)
   }
 
-  return <AuthContext.Provider value={{ user, isLoading, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
+  const getAccessToken = async (): Promise<string | null> => {
+    if (session?.access_token) {
+      return session.access_token
+    }
+    const { data } = await supabase.auth.getSession()
+    return data.session?.access_token ?? null
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading, signIn, signUp, signOut, getAccessToken }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {

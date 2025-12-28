@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Search, Camera, CheckCircle, XCircle, Loader2, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useI18n } from "@/lib/i18n/context"
+import { useAuth } from "@/lib/auth/context"
+import { toast } from "sonner"
 
 interface VinInputProps {
   className?: string
@@ -36,6 +38,7 @@ function cleanVin(vin: string): string {
 export function VinInput({ className, onModeChange }: VinInputProps) {
   const router = useRouter()
   const { t } = useI18n()
+  const { user, getAccessToken } = useAuth()
   const [vin, setVin] = useState("")
   const [plate, setPlate] = useState("")
   const [plateState, setPlateState] = useState("")
@@ -67,18 +70,119 @@ export function VinInput({ className, onModeChange }: VinInputProps) {
   }, [])
 
   const handleSubmit = useCallback(async () => {
+    if (!user) {
+      router.push("/sign-in")
+      return
+    }
+
+    if (!isValidVin) {
+      toast.error("Please enter a valid 17-character VIN")
+      return
+    }
+
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    const targetVin = isValidVin ? cleanedVin : "1HGBH41JXMN109186"
-    router.push(`/report/${targetVin}`)
-  }, [isValidVin, cleanedVin, router])
+
+    try {
+      const token = await getAccessToken()
+      if (!token) {
+        toast.error("Please sign in to continue")
+        router.push("/sign-in")
+        return
+      }
+
+      const response = await fetch("/api/vin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ vin: cleanedVin }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        if (response.status === 402) {
+          toast.error("No reports remaining. Please purchase a plan.")
+          router.push("/pricing")
+          return
+        }
+        if (response.status === 429) {
+          toast.error(`Rate limit exceeded. Please wait ${data.retryAfter} seconds.`)
+          return
+        }
+        toast.error(data.error || "Failed to fetch report")
+        return
+      }
+
+      router.push(`/report/${data.reportId}`)
+    } catch (error) {
+      console.error("VIN lookup error:", error)
+      toast.error("An error occurred. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isValidVin, cleanedVin, router, user, getAccessToken])
 
   const handlePlateSubmit = useCallback(async () => {
+    if (!user) {
+      router.push("/sign-in")
+      return
+    }
+
+    if (!plate || plate.length < 2 || plate.length > 8) {
+      toast.error("Please enter a valid license plate (2-8 characters)")
+      return
+    }
+
+    if (!plateState || plateState.length !== 2) {
+      toast.error("Please enter a valid 2-letter state code")
+      return
+    }
+
     setIsPlateLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    // For demo, navigate to sample report
-    router.push(`/report/1HGBH41JXMN109186`)
-  }, [router])
+
+    try {
+      const token = await getAccessToken()
+      if (!token) {
+        toast.error("Please sign in to continue")
+        router.push("/sign-in")
+        return
+      }
+
+      const response = await fetch("/api/plate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ plate, state: plateState }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        if (response.status === 402) {
+          toast.error("No reports remaining. Please purchase a plan.")
+          router.push("/pricing")
+          return
+        }
+        if (response.status === 429) {
+          toast.error(`Rate limit exceeded. Please wait ${data.retryAfter} seconds.`)
+          return
+        }
+        toast.error(data.error || "Failed to fetch report")
+        return
+      }
+
+      router.push(`/report/${data.reportId}`)
+    } catch (error) {
+      console.error("Plate lookup error:", error)
+      toast.error("An error occurred. Please try again.")
+    } finally {
+      setIsPlateLoading(false)
+    }
+  }, [router, user, getAccessToken, plate, plateState])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
