@@ -1,6 +1,3 @@
-import { cookies } from "next/headers"
-import { createClient } from "@supabase/supabase-js"
-import { notFound } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ReportHeaderCard } from "@/components/report/report-header-card"
@@ -10,65 +7,23 @@ import { StickyActionBar } from "@/components/report/sticky-action-bar"
 import { ReportWatermark } from "@/components/report/report-watermark"
 import { DemoStateProvider } from "@/components/demo-state-provider"
 import { DemoStateToggle } from "@/components/demo-state-toggle"
-import { mockReport, mockCautionReport, mockHighRiskReport, type VehicleReport } from "@/lib/mock-data"
-import type { Database } from "@/lib/supabase/types"
+import { mockReport, mockCautionReport, mockHighRiskReport } from "@/lib/mock-data"
 
 export const metadata = {
   title: "Vehicle Report - CarMR",
   description: "Comprehensive vehicle history report with AI-powered summary.",
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-function isUUID(str: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-  return uuidRegex.test(str)
-}
-
-function getReportForVin(vin: string): VehicleReport {
+// Map sample VINs to different report types for demo
+function getReportForVin(vin: string) {
   if (vin === "2T1BURHE5JC073215") return mockCautionReport
   if (vin === "3FA6P0H77KR245892") return mockHighRiskReport
-  return { ...mockReport, vin }
-}
-
-async function getReportFromDatabase(reportId: string): Promise<VehicleReport | null> {
-  if (!supabaseServiceKey) {
-    return null
-  }
-
-  const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  })
-
-  const { data: report, error } = await supabase
-    .from("reports")
-    .select("*")
-    .eq("id", reportId)
-    .eq("status", "completed")
-    .maybeSingle()
-
-  if (error || !report || !report.report_data) {
-    return null
-  }
-
-  return report.report_data as unknown as VehicleReport
+  return mockReport
 }
 
 export default async function ReportPage({ params }: { params: Promise<{ vin: string }> }) {
-  const { vin: identifier } = await params
-
-  let report: VehicleReport
-
-  if (isUUID(identifier)) {
-    const dbReport = await getReportFromDatabase(identifier)
-    if (!dbReport) {
-      notFound()
-    }
-    report = dbReport
-  } else {
-    report = getReportForVin(identifier)
-  }
+  const { vin } = await params
+  const report = getReportForVin(vin)
 
   return (
     <DemoStateProvider>
@@ -84,16 +39,19 @@ export default async function ReportPage({ params }: { params: Promise<{ vin: st
                 <ReportTabs report={report} />
               </div>
 
+              {/* Sidebar - 40% on desktop */}
               <div className="hidden min-w-0 lg:block">
                 <ReportSidebar report={report} />
               </div>
             </div>
           </div>
 
+          {/* Mobile sticky action bar */}
           <StickyActionBar report={report} className="lg:hidden" />
         </main>
         <Footer />
 
+        {/* Demo state toggle */}
         <DemoStateToggle />
       </div>
     </DemoStateProvider>
