@@ -23,7 +23,7 @@ export async function lookupVin(vin: string): Promise<VinLookupResult> {
   }
 
   try {
-    const response = await fetch(`${AUTO_DATA_DIRECT_API_URL}/vin/${vin}`, {
+    const response = await fetch(`${AUTO_DATA_DIRECT_API_URL}/vin-decode/${vin}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${AUTO_DATA_DIRECT_API_KEY}`,
@@ -58,13 +58,12 @@ export async function lookupPlate(
   }
 
   try {
-    const response = await fetch(`${AUTO_DATA_DIRECT_API_URL}/plate`, {
-      method: "POST",
+    const response = await fetch(`${AUTO_DATA_DIRECT_API_URL}/license-decode/${plate}/${state}`, {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${AUTO_DATA_DIRECT_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ plate, state }),
     })
 
     if (!response.ok) {
