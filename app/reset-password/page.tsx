@@ -1,46 +1,67 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react"
+import { Loader2, CheckCircle2 } from "lucide-react"
 import { createBrowserClient } from "@/lib/supabase/client"
 
-export default function ForgotPasswordPage() {
-  const [emailOrPhone, setEmailOrPhone] = useState("")
+export default function ResetPasswordPage() {
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState("")
+  const router = useRouter()
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const supabase = createBrowserClient()
+      const { data } = await supabase.auth.getSession()
+      if (!data.session) {
+        setError("Invalid or expired reset link. Please request a new password reset.")
+      }
+    }
+    checkSession()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
-    setIsLoading(true)
 
-    const isEmail = emailOrPhone.includes("@")
-    if (!isEmail) {
-      setError("Please enter a valid email address")
-      setIsLoading(false)
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters")
       return
     }
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
+
+    setIsLoading(true)
+
     try {
       const supabase = createBrowserClient()
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(emailOrPhone, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password,
       })
 
-      if (resetError) {
-        setError(resetError.message)
+      if (updateError) {
+        setError(updateError.message)
       } else {
         setIsSuccess(true)
+        setTimeout(() => {
+          router.push("/sign-in")
+        }, 2000)
       }
     } catch (err) {
-      setError("Failed to send reset instructions. Please try again.")
+      setError("Failed to update password. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -55,7 +76,7 @@ export default function ForgotPasswordPage() {
               Home
             </Link>
             <span className="mx-2">›</span>
-            <span>Forgot Password</span>
+            <span>Reset Password</span>
           </nav>
         </div>
 
@@ -76,28 +97,15 @@ export default function ForgotPasswordPage() {
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Check your inbox</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Password updated</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                We&apos;ve sent password reset instructions to{" "}
-                <span className="font-medium text-foreground">{emailOrPhone}</span>
+                Your password has been successfully reset. Redirecting to sign in...
               </p>
             </div>
 
-            <div className="space-y-3">
-              <Button asChild className="w-full">
-                <Link href="/sign-in">Back to Sign In</Link>
-              </Button>
-              <p className="text-sm text-muted-foreground">
-                Didn&apos;t receive the email?{" "}
-                <button
-                  type="button"
-                  onClick={() => setIsSuccess(false)}
-                  className="font-medium text-primary hover:underline"
-                >
-                  Try again
-                </button>
-              </p>
-            </div>
+            <Button asChild className="w-full">
+              <Link href="/sign-in">Go to Sign In</Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -112,7 +120,7 @@ export default function ForgotPasswordPage() {
             Home
           </Link>
           <span className="mx-2">›</span>
-          <span>Forgot Password</span>
+          <span>Reset Password</span>
         </nav>
       </div>
 
@@ -128,9 +136,9 @@ export default function ForgotPasswordPage() {
                 className="mx-auto h-10 w-auto"
               />
             </Link>
-            <h1 className="mt-6 text-2xl font-bold tracking-tight">Forgot password?</h1>
+            <h1 className="mt-6 text-2xl font-bold tracking-tight">Reset your password</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Enter your email or phone number and we&apos;ll send you instructions to reset your password.
+              Enter your new password below.
             </p>
           </div>
 
@@ -138,15 +146,30 @@ export default function ForgotPasswordPage() {
             {error && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
             <div className="space-y-2">
-              <Label htmlFor="emailOrPhone">Email or phone number</Label>
+              <Label htmlFor="password">New Password</Label>
               <Input
-                id="emailOrPhone"
-                type="text"
-                placeholder="you@example.com or +1 (555) 123-4567"
-                value={emailOrPhone}
-                onChange={(e) => setEmailOrPhone(e.target.value)}
+                id="password"
+                type="password"
+                placeholder="Enter new password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete="username"
+                autoComplete="new-password"
+                minLength={6}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                autoComplete="new-password"
+                minLength={6}
               />
             </div>
 
@@ -154,20 +177,12 @@ export default function ForgotPasswordPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending...
+                  Updating...
                 </>
               ) : (
-                "Send reset instructions"
+                "Update password"
               )}
             </Button>
-
-            <Link
-              href="/sign-in"
-              className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Sign In
-            </Link>
           </form>
         </div>
       </div>

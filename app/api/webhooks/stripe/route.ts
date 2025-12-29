@@ -3,6 +3,7 @@ import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 import type { Database } from "@/lib/supabase/types"
 import { createEntitlement, deactivateSubscription, PLAN_CONFIG } from "@/lib/services/entitlements"
+import { sendPurchaseConfirmation, sendSubscriptionConfirmation, sendSubscriptionCanceled, sendPaymentFailed } from "@/lib/services/email"
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY
@@ -140,6 +141,26 @@ async function handleCheckoutCompleted(
     metadata: { session_id: session.id },
     processed_at: new Date().toISOString(),
   })
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", userId)
+    .maybeSingle()
+
+  if (profile?.email) {
+    const config = PLAN_CONFIG[planName]
+    if (session.mode === "subscription") {
+      await sendSubscriptionConfirmation(profile.email, session.subscription as string)
+    } else {
+      await sendPurchaseConfirmation(
+        profile.email,
+        planName,
+        session.amount_total || 0,
+        config?.credits
+      )
+    }
+  }
 }
 
 async function handleSubscriptionUpdate(
@@ -206,6 +227,19 @@ async function handleSubscriptionCanceled(
     metadata: { subscription_id: subscription.id, action: "canceled" },
     processed_at: new Date().toISOString(),
   })
+
+  if (subscription.metadata?.user_id) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", subscription.metadata.user_id)
+      .maybeSingle()
+
+    if (profile?.email) {
+      const endDate = new Date(subscription.current_period_end * 1000).toISOString()
+      await sendSubscriptionCanceled(profile.email, endDate)
+    }
+  }
 }
 
 async function logTransaction(
@@ -243,4 +277,16 @@ async function logFailedPayment(
     },
     processed_at: new Date().toISOString(),
   })
+
+  if (paymentIntent.metadata?.user_id) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", paymentIntent.metadata.user_id)
+      .maybeSingle()
+
+    if (profile?.email) {
+      await sendPaymentFailed(profile.email, paymentIntent.last_payment_error?.message)
+    }
+  }
 }
