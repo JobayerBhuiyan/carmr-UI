@@ -1,28 +1,88 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Check } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import { pricingPlans, proPass, monthlyPlan } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { CTA_SECONDARY } from "@/components/cta"
+import { useAuth } from "@/lib/auth/context"
+import { createBrowserClient } from "@/lib/supabase/client"
 
 interface PricingColumnsProps {
   className?: string
 }
 
+const PLAN_NAME_MAP: Record<string, string> = {
+  "Single Report": "single",
+  "5 Reports": "5-pack",
+  "20 Reports": "20-pack",
+  "Pro Pass": "3-day-pass",
+  "Monthly Subscription": "monthly",
+}
+
 export function PricingColumns({ className }: PricingColumnsProps) {
   const [selectedPackage, setSelectedPackage] = useState(pricingPlans[1].id)
+  const [loading, setLoading] = useState<string | null>(null)
   const currentPackage = pricingPlans.find((p) => p.id === selectedPackage) || pricingPlans[1]
+  const { user } = useAuth()
+  const router = useRouter()
 
-  const handleSelect = (planName: string) => {
-    toast.success(`Selected: ${planName}`, {
-      description: "Checkout integration coming soon.",
-    })
+  const handleSelect = async (planName: string) => {
+    if (!user) {
+      toast.error("Please sign in to continue")
+      router.push("/sign-in")
+      return
+    }
+
+    const planId = PLAN_NAME_MAP[planName]
+    if (!planId) {
+      toast.error("Invalid plan selected")
+      return
+    }
+
+    setLoading(planId)
+
+    try {
+      const supabase = createBrowserClient()
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        toast.error("Please sign in to continue")
+        router.push("/sign-in")
+        return
+      }
+
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ planName: planId }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create checkout session")
+      }
+
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        throw new Error("No checkout URL returned")
+      }
+    } catch (error) {
+      console.error("Checkout error:", error)
+      toast.error(error instanceof Error ? error.message : "Failed to start checkout")
+      setLoading(null)
+    }
   }
 
   const hasSavings = currentPackage.features.some((f) => f.toLowerCase().includes("save"))
@@ -96,8 +156,20 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         </CardContent>
 
         <div className="mt-auto p-6 pt-4">
-          <button type="button" className={CTA_SECONDARY} onClick={() => handleSelect(currentPackage.name)}>
-            Buy {currentPackage.reports} Report{Number(currentPackage.reports) === 1 ? "" : "s"}
+          <button
+            type="button"
+            className={CTA_SECONDARY}
+            onClick={() => handleSelect(currentPackage.name)}
+            disabled={loading === PLAN_NAME_MAP[currentPackage.name]}
+          >
+            {loading === PLAN_NAME_MAP[currentPackage.name] ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />
+                Processing...
+              </>
+            ) : (
+              <>Buy {currentPackage.reports} Report{Number(currentPackage.reports) === 1 ? "" : "s"}</>
+            )}
           </button>
         </div>
       </Card>
@@ -142,8 +214,16 @@ export function PricingColumns({ className }: PricingColumnsProps) {
           <Button
             className="w-full bg-primary hover:brightness-110 text-white rounded-2xl px-4 py-3 transition-colors"
             onClick={() => handleSelect(proPass.name)}
+            disabled={loading === "3-day-pass"}
           >
-            Get Pro Pass
+            {loading === "3-day-pass" ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Get Pro Pass"
+            )}
           </Button>
         </div>
       </Card>
@@ -173,8 +253,20 @@ export function PricingColumns({ className }: PricingColumnsProps) {
         </CardContent>
 
         <div className="mt-auto p-6 pt-4">
-          <button type="button" className={CTA_SECONDARY} onClick={() => handleSelect(monthlyPlan.name)}>
-            Subscribe Monthly
+          <button
+            type="button"
+            className={CTA_SECONDARY}
+            onClick={() => handleSelect(monthlyPlan.name)}
+            disabled={loading === "monthly"}
+          >
+            {loading === "monthly" ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />
+                Processing...
+              </>
+            ) : (
+              "Subscribe Monthly"
+            )}
           </button>
         </div>
       </Card>
