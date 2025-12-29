@@ -6,7 +6,12 @@ export function createServerClient() {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing Supabase server environment variables')
+    return createClient<Database>('https://placeholder.supabase.co', 'placeholder-key', {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
   }
 
   return createClient<Database>(supabaseUrl, supabaseServiceKey, {
@@ -22,7 +27,13 @@ export function createAuthClient(accessToken: string) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing Supabase environment variables')
+    return createClient<Database>('https://placeholder.supabase.co', 'placeholder-key', {
+      global: {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    })
   }
 
   return createClient<Database>(supabaseUrl, supabaseAnonKey, {
