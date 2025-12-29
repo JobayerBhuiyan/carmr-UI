@@ -6,6 +6,9 @@ export function createBrowserClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
+    if (typeof window === 'undefined') {
+      return createClient<Database>('https://placeholder.supabase.co', 'placeholder-key')
+    }
     throw new Error('Missing Supabase environment variables')
   }
 
